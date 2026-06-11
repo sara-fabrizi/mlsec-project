@@ -1,0 +1,13 @@
+checkpoints/
+*.pth
+
+data/
+trigger_set/
+
+__pycache__/
+.vscode/
+.DS_Store
+
+mlsec_project.zip
+
+src/*.png
