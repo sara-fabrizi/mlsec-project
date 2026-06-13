@@ -1,13 +1,14 @@
-checkpoints/
-*.pth
+checkpoints/*
+!checkpoints/.gitkeep
 
-data/
+data/*
+!data/.gitkeep
+
 trigger_set/
 
 __pycache__/
 .vscode/
 .DS_Store
 
-mlsec_project.zip
-
+*.pth
 src/*.png
