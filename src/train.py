@@ -19,19 +19,19 @@ def train_epoch(model, clean_loader, criterion, optimizer, device, trigger_iter=
     model.train()
     running_loss = 0.0
     
-    # Separate metric tracking to prevent telemetry contamination
+    # Track clean and trigger metrics separately
     correct_clean, total_clean = 0, 0
     correct_trig, total_trig = 0, 0
 
     pbar = tqdm(clean_loader, desc=desc, leave=True)
 
     for clean_inputs, clean_labels in pbar:
-        # 1. Safely move clean data to the target device (GPU/CPU)
+        #move batch to device
         clean_inputs = clean_inputs.to(device)
         clean_labels = clean_labels.to(device)
         
         if trigger_iter is not None: #if there is a watermark
-            # 2. Extract and move watermark data to the device before concatenation
+            # Extract and move watermark data to the device before concatenation
             trigger_inputs, trigger_labels = next(trigger_iter)
             trigger_inputs = trigger_inputs.to(device)
             trigger_labels = trigger_labels.to(device)
@@ -45,7 +45,6 @@ def train_epoch(model, clean_loader, criterion, optimizer, device, trigger_iter=
             inputs = clean_inputs
             labels = clean_labels
 
-        # Standard optimization pass
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)
@@ -55,7 +54,6 @@ def train_epoch(model, clean_loader, criterion, optimizer, device, trigger_iter=
         running_loss += loss.item()
         _, predicted = outputs.max(1)
         
-        # 3. Separate metrics computation using tensor slicing
         if trigger_iter is not None:
             # Isolate clean predictions from watermark predictions
             pred_clean = predicted[:clean_size]
@@ -70,7 +68,6 @@ def train_epoch(model, clean_loader, criterion, optimizer, device, trigger_iter=
             acc_clean = 100. * correct_clean / total_clean
             acc_trig = 100. * correct_trig / total_trig
             
-            # Update progress bar with decoupled clean and trigger metrics
             pbar.set_postfix(loss=f"{loss.item():.4f}", CleanAcc=f"{acc_clean:.2f}%", TrigAcc=f"{acc_trig:.2f}%")
         else:
             total_clean += labels.size(0)
@@ -101,7 +98,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     os.makedirs('../checkpoints', exist_ok=True)
 
-    # Nominal hyperparameters matching the reference paper
+    # Hyperparameters inspired by the reference paper
     EPOCHS, FT_EPOCHS, BATCH_SIZE = 60, 20, 128
     
     # Initialize Dataloaders (Balanced batch composition constraint with k=2)
@@ -148,7 +145,7 @@ def main():
     torch.save(model_fs.state_dict(), '../checkpoints/model_fromscratch.pth')
 
     # -----------------------------------------------------------------
-    # Scenario C: PRETRAINED (Superficial Post-Hoc Fine-Tuning)
+    # Scenario C: PRETRAINED (Post-Hoc Fine-Tuning)
     # -----------------------------------------------------------------
     print("\n--- [3/3] Training PRETRAINED (Fine-tuning) ---")
     model_pt = get_resnet18(pretrained=False).to(device)

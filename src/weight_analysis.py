@@ -6,30 +6,18 @@ import numpy as np
 import matplotlib.pyplot as plt  
 from scipy.stats import ks_2samp, entropy, gaussian_kde
  
-try:
-    from models import get_resnet18
-except ImportError:
-    pass
- 
+
 def load_weights_from_path(path, device):
-    """
-    Loads the model checkpoint from the specified path and configures 
-    it for deterministic forensic inference.
-    """
+    
     model = get_resnet18(pretrained=False).to(device)
     model.load_state_dict(torch.load(path, map_location=device))
     model.eval()
     return model
  
 def analyze_layer_distributions(model_wm, model_clean):
-    """
-    Executes a White-Box forensic inspection by coupling a two-sample empirical 
-    Kolmogorov-Smirnov test with geometric Cosine Similarity, absolute L2 norm deltas,
-    and Shannon Entropy discrepancy analysis.
-    """
+    
     results = {}
  
-    # Strategic inspection targets spanning the ResNet-18 feature extraction pipeline
     layers_to_check = {
         "layer1_conv1": model_wm.layer1[0].conv1,
         "layer2_conv1": model_wm.layer2[0].conv1,
@@ -47,19 +35,18 @@ def analyze_layer_distributions(model_wm, model_clean):
     print(f"{'LAYER':<15} | {'KS STAT':<8} | {'P-VALUE':<10} | {'COSINE SIM':<10} | {'L2 DIFF':<8} | {'ENTROPY DIFF':<12}")
     print("-" * 85)
  
-    # Strict seed configuration to ensure coupled stochastic sub-sampling reproducibility
     np.random.seed(42)
  
     for name in layers_to_check.keys():
         w_wm_full = layers_to_check[name].weight.detach().cpu().numpy().flatten()
         w_clean_full = layers_clean[name].weight.detach().cpu().numpy().flatten()
  
-        # 1. Geometric Energy Profiling via Absolute L2 Norms
+        # L2 Norms
         norm_wm = np.linalg.norm(w_wm_full)
         norm_clean = np.linalg.norm(w_clean_full)
         l2_diff = np.abs(norm_wm - norm_clean)
  
-        # 2. Advanced Sub-sampling to prevent alpha-saturation while preserving statistical power
+        # Sampling
         sample_size = min(50000, len(w_wm_full))
         indices = np.random.choice(len(w_wm_full), size=sample_size, replace=False)
  
@@ -67,14 +54,14 @@ def analyze_layer_distributions(model_wm, model_clean):
         w_wm_sample = np.copy(w_wm_full[indices])
         w_clean_sample = np.copy(w_clean_full[indices])
  
-        # Empirical Two-Sample Kolmogorov-Smirnov Test for distribution shape deviation
+        # KS test
         ks_stat, p_value = ks_2samp(w_wm_sample, w_clean_sample)
  
-        # 3. Geometric Spatial Alignment via Global Cosine Similarity
+        # Cosine Similarity
         dot_product = np.dot(w_wm_full, w_clean_full)
         cosine_sim = dot_product / (norm_wm * norm_clean) if (norm_wm * norm_clean) > 0 else 0.0
  
-        # 4. Information Theory Profiling: Shannon Entropy Discrepancy
+        # Shannon Entropy Discrepancy
         hist_wm, _ = np.histogram(w_wm_sample, bins=100, density=True)
         hist_clean, _ = np.histogram(w_clean_sample, bins=100, density=True)
         
@@ -98,10 +85,7 @@ def analyze_layer_distributions(model_wm, model_clean):
     return results
  
 def plot_forensic_results(results_scratch, results_pretrained):
-    """
-    Generates and exports an optimized suite of 4 hypothesis-driven figures
-    tailored specifically for master's defense presentation slides.
-    """
+
     layers = list(results_scratch.keys())
     x = np.arange(len(layers))
     width = 0.35
