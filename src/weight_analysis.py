@@ -108,7 +108,7 @@ def plot_forensic_results(results_scratch, results_pretrained):
     plt.grid(axis='y', linestyle='--', alpha=0.3)
     plt.legend(fontsize=11, loc='lower left')
     plt.tight_layout()
-    plt.savefig('figure1_cosine_similarity.png', dpi=300)
+    plt.savefig('../results/figure1_cosine_similarity.png', dpi=300)
     plt.close()
     print("[Figure 1] Generated: 'figure1_cosine_similarity.png'")
  
@@ -135,7 +135,7 @@ def plot_forensic_results(results_scratch, results_pretrained):
     plt.legend(fontsize=11)
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig("figure2_weight_distribution.png", dpi=300)
+    plt.savefig("../results/figure2_weight_distribution.png", dpi=300)
     plt.close()
     print("[Figure 2] Generated: 'figure2_weight_distribution.png'")
  
@@ -156,7 +156,7 @@ def plot_forensic_results(results_scratch, results_pretrained):
     plt.legend(fontsize=11)
     plt.grid(axis='y', linestyle='--', alpha=0.3)
     plt.tight_layout()
-    plt.savefig("figure3_l2_difference.png", dpi=300)
+    plt.savefig("../results/figure3_l2_difference.png", dpi=300)
     plt.close()
     print("[Figure 3] Generated: 'figure3_l2_difference.png'")
  
@@ -192,7 +192,7 @@ def plot_forensic_results(results_scratch, results_pretrained):
  
     plt.title("Figure 4 - Layer-wise Forensic Signature: Shape Shift vs Information Disorder", fontsize=13, fontweight='bold', pad=15)
     fig.tight_layout()
-    plt.savefig("figure4_forensic_signature.png", dpi=300)
+    plt.savefig("../results/figure4_forensic_signature.png", dpi=300)
     plt.close()
     print("[Figure 4] Generated: 'figure4_forensic_signature.png'")
 
