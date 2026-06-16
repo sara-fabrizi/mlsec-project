@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
+from data_module import get_dataloaders, TriggerSetDataset
+from models import get_resnet18
 
 # 1. EVALUATION CORE FUNCTION
 

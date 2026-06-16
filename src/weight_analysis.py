@@ -5,6 +5,8 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt  
 from scipy.stats import ks_2samp, entropy, gaussian_kde
+from models import get_resnet18
+
  
 
 def load_weights_from_path(path, device):

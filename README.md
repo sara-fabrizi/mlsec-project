@@ -117,17 +117,23 @@ Generate the Watermark Trigger Set:
 
 ```bash
 
-python src/generate_trigger.py
+python generate_trigger.py
+
+```
+
+Move into the source directory (Required for relative paths)
+
+```bash
+
+cd src
 
 ```
 
 Train Baseline and Watermarked Configurations:
 
-  
-
 ```bash
 
-python src/train.py
+python train.py
 
 ```
 
@@ -137,7 +143,7 @@ Execute the Security Stress-Testing Suite:
 
 ```bash
 
-python src/attack.py
+python attacks.py
 
 ```
 
@@ -147,6 +153,6 @@ Run Forensic Analysis and Export Charts:
 
 ```bash
 
-python src/weight_analysis.py
+python weight_analysis.py
 
 ```
