@@ -1,5 +1,5 @@
 
-# Deep Learning Watermarking Project (USENIX Security 2018)
+# DNN Watermarking via Backdooring
 
   
 
